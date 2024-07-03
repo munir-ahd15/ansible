@@ -1,0 +1,31 @@
+- name: apache web server installation
+  hosts: all
+  become: true
+
+  tasks:
+
+    - name: check httpd is installed
+      ansible.builtin.dnf:
+        name: "{{ package }}"
+        state: latest
+
+    - name: check httpd webserver service is enabled
+      ansible.builtin.service:
+        name: "{{ package }}"
+        state: started
+        enabled: true
+
+    - name: check port open in firewall
+      ansible.posix.firewalld:
+        service: http
+        state: enabled
+        permanent: true
+        immediate: true
+
+    - name: check content is deplayed
+      ansible.builtin.copy:
+        content: >
+          "Hello, world,
+          I am webserver deployed using ansible "
+        dest: /var/www/html/index.html
+
